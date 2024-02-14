@@ -3,6 +3,7 @@ import org.assignment2.FormulaCalc;
 import org.junit.jupiter.api.Assertions;
 
 public class FormulaCalcTest {
+
     @Test
     public void test_with_H() {
         Assertions.assertEquals(1, FormulaCalc.Algorithm("H"));
@@ -13,7 +14,6 @@ public class FormulaCalcTest {
         Assertions.assertEquals(54, FormulaCalc.Algorithm("KBr"));
     }
 
-//    The parentheses are replaced with underscores
     @Test
     public void test_with_NaCl() {
         Assertions.assertEquals(28, FormulaCalc.Algorithm("NaCl"));
@@ -38,5 +38,4 @@ public class FormulaCalcTest {
     public void test_with_Co3_Fe_CN_6_2() {
         Assertions.assertEquals(289, FormulaCalc.Algorithm("Co3(Fe(CN)6)2"));
     }
-
 }
