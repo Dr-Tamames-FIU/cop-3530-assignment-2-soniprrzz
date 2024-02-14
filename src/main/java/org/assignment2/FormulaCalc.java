@@ -5,17 +5,18 @@ import java.util.Stack;
 public class FormulaCalc {
 
     public static void main(String[] args) {
-        System.out.println(Algorithm("H"));
-        System.out.println(Algorithm("KBr"));
-        System.out.println(Algorithm("H2O"));
-        System.out.println(Algorithm("NaCl"));
-        System.out.println(Algorithm("C6H12O6"));
-        System.out.println(Algorithm("Ni(NO3)2"));
-        System.out.println(Algorithm("Co3(Fe(CN)6)2"));
+        // Testing the Algorithm method
+        System.out.println(Algorithm("H"));           
+        System.out.println(Algorithm("KBr"));          
+        System.out.println(Algorithm("H2O"));         
+        System.out.println(Algorithm("NaCl"));        
+        System.out.println(Algorithm("C6H12O6"));     
+        System.out.println(Algorithm("Ni(NO3)2"));     
+        System.out.println(Algorithm("Co3(Fe(CN)6)2")); 
     }
 
     /**
-     * Algorithm to compute the total number of protons in a molecular formula.
+     * Algorithm to compute the total number of protons in a given molecular formula.
      *
      * @param formula Molecular formula
      * @return Total number of protons
@@ -23,46 +24,61 @@ public class FormulaCalc {
     public static int Algorithm(String formula) {
         Stack<Integer> stack = new Stack<>();
         int cumulativeSum = 0;
-
+    
         for (int i = 0; i < formula.length(); i++) {
-            char c = formula.charAt(i);
-
-            if (Character.isUpperCase(c)) {
+            char currentChar = formula.charAt(i);
+    
+            if (Character.isUpperCase(currentChar)) {
+                // If it's a capital letter
                 if (!stack.isEmpty()) {
                     cumulativeSum += stack.pop();
                 }
-                String elementSymbol = String.valueOf(c);
-                stack.push(getElementProtons(elementSymbol));
-            } else if (Character.isLowerCase(c)) {
-                // Add the cumulative sum for lowercase letters
-                cumulativeSum += stack.pop();
-                String elementSymbol = String.valueOf(c);
-                stack.push(getElementProtons(elementSymbol));
-            } else if (Character.isDigit(c)) {
-                int multiplier = Character.getNumericValue(c);
-                stack.push(stack.pop() * multiplier);
-            } else if (c == '(') {
-                // Push current cumulative sum and reset it
+    
+                int atomicNumber;
+                if (i + 1 < formula.length() && Character.isLowerCase(formula.charAt(i + 1))) {
+                    atomicNumber = getElementProtons(formula.substring(i, i + 2));
+                    i++;
+                } else {
+                    atomicNumber = getElementProtons(formula.substring(i, i + 1));
+                }
+    
+                stack.push(atomicNumber);
+            } else if (Character.isDigit(currentChar)) {
+                // If it's a number, accumulate it
+                int count = currentChar - '0';
+                while (i + 1 < formula.length() && Character.isDigit(formula.charAt(i + 1))) {
+                    count = count * 10 + (formula.charAt(++i) - '0');
+                }
+    
+                // Multiply by the last element's atomic number and add to the cumulative sum
+                cumulativeSum += count * (stack.isEmpty() ? 1 : stack.pop());
+            } else if (currentChar == '(') {
+                // If it's an opening parenthesis, push the cumulative sum to the stack
                 stack.push(cumulativeSum);
-                cumulativeSum = 0;
-            } else if (c == ')') {
-                // Pop the cumulative sum from the opening parenthesis
-                int subexpressionSum = stack.pop();
-                // Multiply it by the multiplier after the closing parenthesis
-                int multiplier = Character.getNumericValue(formula.charAt(++i));
-                cumulativeSum += subexpressionSum * multiplier;
+                cumulativeSum = 0; // Reset cumulative sum
+            } else if (currentChar == ')') {
+                // If it's a closing parenthesis, pop the stack, multiply by the number, and add to the cumulative sum
+                int count = 1;
+                if (i + 1 < formula.length() && Character.isDigit(formula.charAt(i + 1))) {
+                    count = formula.charAt(++i) - '0';
+                }
+                
+                // Multiply by the last element's atomic number (if there is one) and add to the cumulative sum
+                cumulativeSum += (stack.isEmpty() ? 1 : stack.pop()) * count;
             }
         }
-
+    
+        // Add any remaining values in the stack to the cumulative sum
         while (!stack.isEmpty()) {
             cumulativeSum += stack.pop();
         }
-
+    
         return cumulativeSum;
     }
-
-    private static int getElementProtons(String elementSymbol) {
-        switch (elementSymbol) {
+    
+    
+    private static int getElementProtons(String symbol) {
+        switch (symbol) {
             case "H": return 1;
             case "He": return 2;
             case "Li": return 3;
@@ -121,4 +137,6 @@ public class FormulaCalc {
         }
     }
 }
+
+
 
